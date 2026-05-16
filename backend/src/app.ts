@@ -3,6 +3,7 @@ dotenv.config();
 
 import express from 'express';
 import cors from 'cors';
+import { globalErrorHandler, notFoundHandler } from './middlewares/errorHandler';
 
 const app = express();
 
@@ -14,6 +15,10 @@ app.get('/', (req, res) => {
 });
 
 
+// 404 handler (must be after all routes)
+app.use(notFoundHandler);
 
+// Global error handler (must be last middleware)
+app.use(globalErrorHandler);
 
 export default app;
