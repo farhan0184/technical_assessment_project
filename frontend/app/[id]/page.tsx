@@ -37,10 +37,20 @@ export default async function SurahPage({ params }: { params: Promise<{ id: stri
   const { id } = await params;
   
   let surah: SurahDetail | undefined;
+  let prevSlug: string | null = null;
+  let nextSlug: string | null = null;
   let error: string | null = null;
   
   try {
     surah = await getSurahDetail(id);
+    const surahs = await getSurahs();
+    const currentIndex = surahs.findIndex(s => s.number === surah?.number);
+    if (currentIndex !== -1) {
+      const prevSurah = currentIndex > 0 ? surahs[currentIndex - 1] : null;
+      const nextSurah = currentIndex < surahs.length - 1 ? surahs[currentIndex + 1] : null;
+      prevSlug = prevSurah ? prevSurah.slug : null;
+      nextSlug = nextSurah ? nextSurah.slug : null;
+    }
   } catch (e) {
     error = "Failed to load surah content. Please check your internet connection and try again.";
   }
@@ -60,7 +70,7 @@ export default async function SurahPage({ params }: { params: Promise<{ id: stri
               </a>
             </div>
           ) : (
-            surah && <AyahList surah={surah} />
+            surah && <AyahList surah={surah} prevSlug={prevSlug} nextSlug={nextSlug} />
           )}
         </div>
       </ScrollArea>

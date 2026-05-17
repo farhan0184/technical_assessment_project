@@ -2,10 +2,19 @@
 
 import { SurahDetail } from "@/lib/quran-api";
 import { useSettings } from "@/components/providers";
-import { Play, Pause, Bookmark, MoreHorizontal, BookOpen } from "lucide-react";
+import { Play, Pause, Bookmark, MoreHorizontal, BookOpen, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
-export function AyahList({ surah }: { surah: SurahDetail }) {
+export function AyahList({
+  surah,
+  prevSlug,
+  nextSlug,
+}: {
+  surah: SurahDetail;
+  prevSlug?: string | null;
+  nextSlug?: string | null;
+}) {
   const {
     arabicFont,
     arabicFontSize,
@@ -199,6 +208,43 @@ export function AyahList({ surah }: { surah: SurahDetail }) {
           </div>
         );
       })}
+
+      {/* Pagination Control */}
+      <div className="flex items-center justify-center mt-12 mb-8">
+        <div className="inline-flex items-center rounded-full bg-secondary/50 border border-border/80 p-1 shadow-sm select-none">
+          {prevSlug ? (
+            <Link
+              href={`/${prevSlug}`}
+              className="flex items-center justify-center gap-1.5 w-32 py-2 text-sm font-semibold text-primary hover:text-primary/80 transition-colors rounded-full hover:bg-primary/5 active:scale-95 duration-200"
+            >
+              <ChevronLeft className="h-4.5 w-4.5" />
+              <span>Previous</span>
+            </Link>
+          ) : (
+            <span className="flex items-center justify-center gap-1.5 w-32 py-2 text-sm font-semibold text-muted-foreground/40 cursor-not-allowed">
+              <ChevronLeft className="h-4.5 w-4.5" />
+              <span>Previous</span>
+            </span>
+          )}
+
+          <div className="w-[1px] h-5 bg-border/80 mx-1" />
+
+          {nextSlug ? (
+            <Link
+              href={`/${nextSlug}`}
+              className="flex items-center justify-center gap-1.5 w-32 py-2 text-sm font-semibold text-primary hover:text-primary/80 transition-colors rounded-full hover:bg-primary/5 active:scale-95 duration-200"
+            >
+              <span>Next</span>
+              <ChevronRight className="h-4.5 w-4.5" />
+            </Link>
+          ) : (
+            <span className="flex items-center justify-center gap-1.5 w-32 py-2 text-sm font-semibold text-muted-foreground/40 cursor-not-allowed">
+              <span>Next</span>
+              <ChevronRight className="h-4.5 w-4.5" />
+            </span>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

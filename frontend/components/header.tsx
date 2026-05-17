@@ -56,6 +56,7 @@ export function Header() {
   const rafId = useRef<number | null>(null);
   const isHidden = useRef(false);
   const scrollContainer = useRef<EventTarget | null>(null);
+  const mobileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (activeAyahIndex !== null) {
@@ -151,6 +152,15 @@ export function Header() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
+  useEffect(() => {
+    if (showSearchInput && window.innerWidth < 768) {
+      const t = setTimeout(() => {
+        mobileInputRef.current?.focus();
+      }, 150);
+      return () => clearTimeout(t);
+    }
+  }, [showSearchInput]);
+
   return (
     <header className={cn(
       "sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300 ease-in-out",
@@ -159,6 +169,42 @@ export function Header() {
         : "h-0 py-0 opacity-0 border-b-0 pointer-events-none overflow-hidden"
     )}>
       <div className="relative flex h-14 items-center justify-between px-4 lg:px-8">
+
+        {/* Mobile Search Overlay */}
+        <div className={cn(
+          "absolute inset-0 bg-background/98 backdrop-blur-md z-50 flex items-center px-4 gap-3 transition-all duration-300 md:hidden",
+          showSearchInput 
+            ? "opacity-100 translate-y-0 pointer-events-auto" 
+            : "opacity-0 -translate-y-2 pointer-events-none"
+        )}>
+          <form
+            className="flex-1 flex items-center gap-3"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const q = new FormData(e.currentTarget).get("q");
+              if (q) router.push(`/search?q=${q}`);
+              setShowSearchInput(false);
+            }}
+          >
+            <div className="relative flex-1">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-muted-foreground" />
+              <Input
+                ref={mobileInputRef}
+                name="q"
+                type="search"
+                placeholder="Search surah or ayah..."
+                className="pl-10 pr-4 h-10 w-full rounded-full bg-secondary border border-border/50 focus-visible:ring-primary text-sm"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowSearchInput(false)}
+              className="text-sm font-semibold text-primary hover:text-primary/80 transition-colors px-1"
+            >
+              Cancel
+            </button>
+          </form>
+        </div>
 
         
         <div className="flex items-center gap-2">
@@ -191,16 +237,13 @@ export function Header() {
         {/* Right: Actions */}
         <div className="flex items-center gap-3">
 
-          {/* Search */}
-          <div className={cn(
-            "flex items-center transition-all duration-200",
-            showSearchInput
-              ? "absolute inset-x-4 top-1/2 -translate-y-1/2 md:relative md:inset-auto md:translate-y-0 z-50 bg-background md:bg-transparent h-11 md:h-auto px-3 md:px-0 rounded-full border border-primary/10 dark:border-primary/20 md:border-0 shadow-sm md:shadow-none"
-              : "relative"
-          )}>
-            {showSearchInput ? (
+          {/* Desktop Search Component */}
+          <div className="hidden md:flex items-center relative">
+            <div className={cn(
+              "flex items-center transition-all duration-300 ease-in-out origin-right",
+              showSearchInput ? "w-40 lg:w-48 opacity-100 scale-100 mr-2" : "w-0 opacity-0 scale-95 pointer-events-none"
+            )}>
               <form
-                className="flex-1 flex items-center gap-2 animate-in slide-in-from-right duration-200"
                 onSubmit={(e) => {
                   e.preventDefault();
                   const q = new FormData(e.currentTarget).get("q");
@@ -212,19 +255,13 @@ export function Header() {
                   name="q"
                   type="search"
                   placeholder="Search ayah..."
-                  className="w-full md:w-40 lg:w-48 bg-primary/5 border-primary/20 focus-visible:ring-primary h-9 rounded-full px-4 text-sm"
-                  autoFocus
+                  className="w-full bg-primary/5 border border-primary/20 focus-visible:ring-primary h-9 rounded-full px-4 text-sm"
+                  autoFocus={showSearchInput}
                   onBlur={() => setTimeout(() => setShowSearchInput(false), 200)}
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowSearchInput(false)}
-                  className="md:hidden flex h-8 items-center justify-center rounded-full px-3 text-xs font-semibold text-muted-foreground hover:bg-muted/50 transition-colors"
-                >
-                  Cancel
-                </button>
               </form>
-            ) : (
+            </div>
+            {!showSearchInput && (
               <button
                 onClick={() => setShowSearchInput(true)}
                 className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/5 dark:bg-primary/10 text-primary hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors"
@@ -234,6 +271,15 @@ export function Header() {
               </button>
             )}
           </div>
+
+          {/* Mobile Search Trigger */}
+          <button
+            onClick={() => setShowSearchInput(true)}
+            className="flex md:hidden h-10 w-10 items-center justify-center rounded-full bg-primary/5 dark:bg-primary/10 text-primary hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors"
+            title="Search"
+          >
+            <Search className="h-5 w-5" />
+          </button>
 
           {/* Theme */}
           <div className="relative" ref={themeMenuRef}>
