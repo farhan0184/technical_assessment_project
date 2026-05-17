@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { useSettings } from "@/components/providers";
 import { cn } from "@/lib/utils";
 import { SurahSidebar } from "./surah-sidebar";
+import { SettingsDrawer } from "./settings-drawer";
 
 const SunIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -283,7 +284,7 @@ export function Header() {
                 <SheetTitle>Settings</SheetTitle>
                 <SheetDescription>Adjust appearance and font settings.</SheetDescription>
               </SheetHeader>
-              {/* settings content */}
+              <SettingsDrawer />
             </SheetContent>
           </Sheet>
 
