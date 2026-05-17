@@ -94,7 +94,7 @@ export function AyahList({ surah }: { surah: SurahDetail }) {
           <div
             key={ayah.number}
             id={`ayah-${index}`}
-            className="flex gap-8 py-8 border-b border-border/50 last:border-0 group px-8 scroll-mt-20 md:scroll-mt-24"
+            className="flex gap-8 py-8 border-b border-border/50 last:border-0 group md:px-8 px-4 scroll-mt-20 md:scroll-mt-24"
           >
             {/* Left Control Column */}
             <div className="flex flex-col items-center gap-5 w-12 shrink-0 select-none">

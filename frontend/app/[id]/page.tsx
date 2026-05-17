@@ -48,7 +48,7 @@ export default async function SurahPage({ params }: { params: Promise<{ id: stri
   return (
     <main className="flex-1 overflow-hidden">
       <ScrollArea className="h-full">
-        <div className="py-6">
+        <div className="">
           {error ? (
             <div className="flex h-[50vh] flex-col items-center justify-center text-center p-10">
               <h2 className="text-2xl font-bold mb-4">Error</h2>
