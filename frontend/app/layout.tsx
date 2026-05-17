@@ -36,6 +36,7 @@ export const metadata: Metadata = {
 };
 
 import { SettingsProvider } from "@/components/providers";
+import { BottomAudioPlayer } from "@/components/audio-player";
 
 export default function RootLayout({
   children,
@@ -50,6 +51,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <SettingsProvider>
           {children}
+           <BottomAudioPlayer />
         </SettingsProvider>
       </body>
     </html>
