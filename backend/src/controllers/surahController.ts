@@ -48,6 +48,7 @@ export const getSurahByNumber = async (req: Request, res: Response, next: NextFu
             OR: [
               { transliteration: { contains: idStr } },
               { surah_name: { contains: idStr } },
+              { translation: { contains: idStr } },
             ],
           },
       orderBy: {
