@@ -1,0 +1,22 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model quran {
+  surah_number    Int
+  surah_name      String?
+  transliteration String?
+  type            String?
+  verse_number    Int
+  verse           String?
+  translation     String?
+
+  @@id([surah_number, verse_number])
+  @@map("surah_names")
+}
