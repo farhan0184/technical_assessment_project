@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSettings } from "@/components/providers";
 import { cn } from "@/lib/utils";
+import { SurahSidebar } from "./surah-sidebar";
 
 const SunIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -185,6 +186,7 @@ export function Header() {
                 <SheetDescription>Browse and select a surah from the Quran.</SheetDescription>
               </SheetHeader>
              {/* Surah List Content */}
+             <SurahSidebar onSelect={() => setOpenSurah(false)} />
             </SheetContent>
           </Sheet>
 
