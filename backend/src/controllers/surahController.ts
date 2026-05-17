@@ -34,6 +34,29 @@ export const getSurahs = async (req: Request, res: Response, next: NextFunction)
   }
 };
 
+export const searchTranslation = async (req: Request, res: Response, next: NextFunction) => {
+  const translation = req.query.translation as string | undefined;
+
+  if (!translation || translation.trim() === '') {
+    return next(new AppError('Query parameter "translation" is required', 400));
+  }
+
+  try {
+    const count = await prisma.quran.count({
+      where: {
+        translation: {
+          contains: translation,
+          mode: 'insensitive',
+        },
+      },
+    });
+
+    ApiResponse.success(res, { query: translation, count }, 'Translation search completed successfully');
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getSurahByNumber = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
   const surahId = Array.isArray(id) ? id[0] : id;
@@ -48,7 +71,6 @@ export const getSurahByNumber = async (req: Request, res: Response, next: NextFu
             OR: [
               { transliteration: { contains: idStr } },
               { surah_name: { contains: idStr } },
-              { translation: { contains: idStr } },
             ],
           },
       orderBy: {
