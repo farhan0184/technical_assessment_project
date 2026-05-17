@@ -42,16 +42,22 @@ export const searchTranslation = async (req: Request, res: Response, next: NextF
   }
 
   try {
-    const count = await prisma.quran.count({
+    const verses = await prisma.quran.findMany({
       where: {
         translation: {
           contains: translation,
-          mode: 'insensitive',
         },
+      },
+      orderBy: {
+        surah_number: 'asc',
       },
     });
 
-    ApiResponse.success(res, { query: translation, count }, 'Translation search completed successfully');
+    ApiResponse.success(
+      res,
+      { query: translation, count: verses.length, verses },
+      'Translation search completed successfully'
+    );
   } catch (error) {
     next(error);
   }
