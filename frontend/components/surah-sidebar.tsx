@@ -9,14 +9,21 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { getSurahs, Surah, getSurahSlug } from "@/lib/quran-api";
 import { cn } from "@/lib/utils";
 
+// Global cache to persist loaded surahs list across sidebar remounts (route transitions)
+let globalCachedSurahs: Surah[] = [];
+
 export function SurahSidebar({ className, onSelect }: { className?: string, onSelect?: () => void }) {
   const pathname = usePathname();
-  const [surahs, setSurahs] = useState<Surah[]>([]);
+  const [surahs, setSurahs] = useState<Surah[]>(globalCachedSurahs);
   const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(globalCachedSurahs.length === 0);
 
   useEffect(() => {
+    if (globalCachedSurahs.length > 0) {
+      return;
+    }
     getSurahs().then((data) => {
+      globalCachedSurahs = data;
       setSurahs(data);
       setLoading(false);
     });
