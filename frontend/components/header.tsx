@@ -3,15 +3,14 @@
 import { Menu, Settings, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-
+import { SurahSidebar } from "@/components/surah-sidebar";
+import { SettingsDrawer } from "@/components/settings-drawer";
 import { Input } from "@/components/ui/input";
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSettings } from "@/components/providers";
 import { cn } from "@/lib/utils";
-import { SurahSidebar } from "./surah-sidebar";
-import { SettingsDrawer } from "./settings-drawer";
 
 const SunIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -56,8 +55,6 @@ export function Header() {
   const isAutoScrollingRef = useRef(false);
   const rafId = useRef<number | null>(null);
   const isHidden = useRef(false);
-  // We track WHICH element is the main scroll container so inner
-  // Radix divs don't interfere — set once on first significant scroll.
   const scrollContainer = useRef<EventTarget | null>(null);
 
   useEffect(() => {
@@ -73,15 +70,9 @@ export function Header() {
       if (isAutoScrollingRef.current) return;
 
       const target = e.target as HTMLElement | Document;
-
-      // ── Identify the main scroll container on first scroll ──
-      // The main container is whichever element scrolls most (tallest scrollHeight).
-      // We lock onto it and ignore all other elements after that.
       if (!scrollContainer.current) {
         scrollContainer.current = target;
       } else if (target !== scrollContainer.current) {
-        // A different element scrolled — could be a bigger container we missed.
-        // Upgrade if this one has more scrollable content.
         const cur = scrollContainer.current as HTMLElement;
         const el = target as HTMLElement;
         const curHeight = cur === (document as any) ? document.documentElement.scrollHeight : cur.scrollHeight;
@@ -89,7 +80,6 @@ export function Header() {
         if (elHeight > curHeight) {
           scrollContainer.current = target;
         } else {
-          // Ignore — it's an inner div (Radix ScrollArea, dropdown, etc.)
           return;
         }
       }
@@ -114,8 +104,7 @@ export function Header() {
           clientHeight = div.clientHeight;
         }
 
-        // Freeze zone: within one header-height of the bottom.
-        // Toggling here would change scrollHeight → trigger more events → vibrate.
+       
         const distToBottom = scrollHeight - scrollY - clientHeight;
         if (distToBottom < HEADER_HEIGHT) {
           lastScrollY.current = scrollY;
@@ -137,8 +126,7 @@ export function Header() {
       });
     };
 
-    // Capture phase so we hear inner container scrolls too,
-    // but we filter to only act on the main one.
+    
     window.addEventListener("scroll", handleScroll, { capture: true, passive: true });
     return () => {
       window.removeEventListener("scroll", handleScroll, { capture: true });
@@ -165,14 +153,14 @@ export function Header() {
 
   return (
     <header className={cn(
-      "sticky top-0 z-40 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300 ease-in-out overflow-hidden",
+      "sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300 ease-in-out",
       visible
-        ? "h-20 py-3 opacity-100 border-b pointer-events-auto"
-        : "h-0 py-0 opacity-0 border-b-0 pointer-events-none"
+        ? "h-20 py-3 opacity-100 border-b pointer-events-auto overflow-visible"
+        : "h-0 py-0 opacity-0 border-b-0 pointer-events-none overflow-hidden"
     )}>
       <div className="relative flex h-14 items-center justify-between px-4 lg:px-8">
 
-        {/* Left: Branding */}
+        
         <div className="flex items-center gap-2">
           <Sheet open={openSurah} onOpenChange={setOpenSurah}>
             <SheetTrigger asChild>
@@ -186,8 +174,7 @@ export function Header() {
                 <SheetTitle>Surah List</SheetTitle>
                 <SheetDescription>Browse and select a surah from the Quran.</SheetDescription>
               </SheetHeader>
-             {/* Surah List Content */}
-             <SurahSidebar onSelect={() => setOpenSurah(false)} />
+              <SurahSidebar onSelect={() => setOpenSurah(false)} />
             </SheetContent>
           </Sheet>
 
